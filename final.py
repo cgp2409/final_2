@@ -43,7 +43,7 @@ def load_data2(url):
 hn1 = load_data2('hn.csv')
 hn1 = hn1.rename(columns ={'género':'sexo','rango_edad':'rango_edad','comuna/corregimiento':'comuna','barrio/vereda':'nombre_barrio','arma-medio':'arma_medio','clase_de_sitio':'lugar'})
 hn = hn1.rename(columns ={'rango-edad':'rango_edad'})
-
+dfunion = load_data1('dfunion.csv')
 c1, c2 = st.columns([1,1])
 
 
@@ -267,8 +267,6 @@ st.markdown("<h3 style='text-align: center; color: black;'>Estado civil y el gé
 g1 = hm.groupby(['sexo','estado_civil'])[['hurtos']].count().reset_index()
 fig = px.bar(g1, x="estado_civil", y="hurtos", color="sexo", title="Estado civil y el Sexo de las victimas de hurto en Medellín", barmode = 'group')
 st.write(fig)
-#7. ¿Cuales es el tipo de lugar que mas presenta hurtos?
-
 
     
 #8. ¿Cuales es el tipo de lugar que mas presenta hurtos?   
@@ -420,8 +418,117 @@ c2.write(fig)
 
 
 #neiva 12.¿Cual es el transporte mas comun usado por el agresor?
-st.markdown("<h3 style='text-align: center; color: black;'>Cantidad de hurtos por rangos de hora Neiva</h3>", unsafe_allow_html=True)
-
+st.markdown("<h3 style='text-align: center; color: black;'>Medio de transporte del agresor Neiva</h3>", unsafe_allow_html=True)
 fig = px.sunburst(hn, path=['móvil_agresor', 'sexo'], values='hurtos',color_discrete_sequence=px.colors.sequential.RdBu)
 st.write(fig)
 
+
+
+#########################UNION####################
+st.markdown("<h1 style='text-align: center; color: #3C9AD0;'> Bases unidas </h1>", unsafe_allow_html=True)
+
+#1.¿Cuales son las caracteristicas mas comunes de la poblacion victima de hurtos (Rango de edad y sexo) ?
+st.markdown("<h3 style='text-align: center; color: black;'>Sexo y edad de las victimas </h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['sexo','rango_edad'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="rango_edad", y="hurtos", color="sexo", title="Rango de edades y Sexo de las victimas de hurto ", barmode = 'group')
+fig.update_layout(xaxis_title="<b>Rango de edad<b>",
+                  yaxis_title="<b>Edades<b>", template = 'simple_white',
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)')
+st.write(fig)
+
+#2. ¿Cuales es la cuidad con mas robos y el sexo de las victimas ?
+st.markdown("<h3 style='text-align: center; color: black;'>Cantidad de robos por ciudad y sexo </h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['ciudad','sexo'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="sexo", y="hurtos", color="ciudad", title="Rango de edades y Sexo de las victimas de hurto ", barmode='overlay')
+fig.update_layout(xaxis_title="<b>Sexo<b>",
+                  yaxis_title="<b>Hurtos<b>", template = 'simple_white',
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)')
+st.write(fig)
+
+#3.¿Cual es la modalidad mas empleada para robar 
+st.markdown("<h3 style='text-align: center; color: black;'>Modalidad de hurtos</h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['modalidad','ciudad'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="modalidad", y="hurtos", color="ciudad", title="Modalidad empleada  y Sexo de las victimas de hurto ")
+fig.update_layout(xaxis_title="<b>Modalidad usada<b>",
+                  yaxis_title="<b>Hurtos<b>", template = 'simple_white',
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)')
+st.write(fig)
+
+#4.¿Cual es el mes con mas hurtos y en a que sexo?
+st.markdown("<h3 style='text-align: center; color: black;'>Hurtos por mes y sexo</h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['sexo','mes'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="mes", y="hurtos", color="sexo", title="Mes y sexo con mas hurtos", barmode='group')
+fig.update_layout(xaxis_title="<b>Mes<b>",
+                  yaxis_title="<b>Hurtos<b>", template = 'simple_white',
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)')
+st.write(fig)
+
+#5. ¿Cual es el arma mas empleada?
+st.markdown("<h3 style='text-align: center; color: black;'>Armas empleadas</h3>", unsafe_allow_html=True)
+fig = px.pie(dfunion, values = 'hurtos', names ='arma_medio',
+             title= 'Porcentaje de uso de armas',
+             color_discrete_sequence=px.colors.qualitative.G10)
+fig.update_layout(
+    xaxis_title = 'Numero de hurtos',
+    yaxis_title = 'Arma empleada',
+    template = 'simple_white',
+    title_x = 0.1)
+st.write(fig)
+
+#6.¿Sexo con mayor probabilidad de ser hurtado?
+st.markdown("<h3 style='text-align: center; color: black;'>Probabilidad de ser asaltado debido al género</h3>", unsafe_allow_html=True)
+
+fig = px.pie(dfunion, values = 'hurtos', names ='sexo',
+             title= '<b>Género con mayor probabilidad de ser asaltado<b>',
+             color_discrete_sequence=px.colors.qualitative.G10)
+fig.update_layout(
+    xaxis_title = 'Numero de hurtos',
+    yaxis_title = 'Sexo',
+    template = 'simple_white',
+    title_x = 0.1)
+st.write(fig)
+
+#7.¿Dia de la semana y ciudad con mas hurtos?
+st.markdown("<h3 style='text-align: center; color: black;'>Hurtos por día y sexo</h3>", unsafe_allow_html=True)
+g1 = dfunion.groupby(['sexo','dia'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="dia", y="hurtos", color="sexo", title="Genero y dia de la semana mas hurtados ")
+st.write(fig)
+
+#8. ¿Lugar y ciudad con mas hurtos?
+df2 = dfunion.groupby(['ciudad','lugar'],)[['hurtos']].count().sort_values(by="hurtos",ascending= False) 
+df2
+
+#9. Medio de transporte con mas probabilidades de sufrir un robo y la ciudad?
+st.markdown("<h3 style='text-align: center; color: black;'>Probabilidad de ser robado en cierto medio de transporte</h3>", unsafe_allow_html=True)
+g1 = dfunion.groupby(['ciudad','medio_transporte'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="medio_transporte", y="hurtos", color="ciudad", title="Medio de transporte mas hurtado por ciudad ")
+st.write(fig)
+
+#10.  ¿Edad con mas hurtos en cada ciudad?
+st.markdown("<h3 style='text-align: center; color: black;'>Hurtos por edad</h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['edad','ciudad'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="edad", y="hurtos", color="ciudad", title="Genero y dia de la semana mas hurtados ")
+st.write(fig)
+
+#11. ¿Cual es la modalidad mas empleada y a que sexo es aplicada?
+st.markdown("<h3 style='text-align: center; color: black;'>Modalidad de hurto y sexo</h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['sexo','modalidad'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="modalidad", y="hurtos", color="sexo", title="Genero de la victima y metodo que es empleado ", barmode='group')
+st.write(fig)
+
+#12. ¿Cual es el arma mas empleada para atracar a que tipo de victima(sexo)?
+st.markdown("<h3 style='text-align: center; color: black;'>Arma usada y sexo</h3>", unsafe_allow_html=True)
+
+g1 = dfunion.groupby(['sexo','arma_medio'])[['hurtos']].count().reset_index()
+fig = px.bar(g1, x="arma_medio", y="hurtos", color="sexo", title="Arma empleada y sexo de la victima ", barmode='group')
+st.write(fig)
