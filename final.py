@@ -419,3 +419,9 @@ fig.update_layout(
 c2.write(fig)
 
 
+#neiva 12.¿Cual es el transporte mas comun usado por el agresor?
+st.markdown("<h3 style='text-align: center; color: black;'>Cantidad de hurtos por rangos de hora Neiva</h3>", unsafe_allow_html=True)
+
+fig = px.sunburst(hn, path=['móvil_agresor', 'sexo'], values='hurtos',color_discrete_sequence=px.colors.sequential.RdBu)
+st.write(fig)
+
